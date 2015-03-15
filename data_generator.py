@@ -20,4 +20,5 @@ if __name__ == "__main__":
 
             print " ".join(features)
 
-        print '#'
+        if game < num_games - 1:
+            print '#'
