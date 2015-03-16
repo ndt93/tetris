@@ -18,7 +18,9 @@ if __name__ == "__main__":
             features.append(str(max(cols)))
             features.append(str(random.randint(0, w)))
 
-            print " ".join(features)
+            reward = random.randint(0, 4)
+
+            print (str(1) + " " + " ".join(features) + " " + str(reward))
 
         if game < num_games - 1:
             print '#'
