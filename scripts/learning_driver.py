@@ -1,5 +1,7 @@
-import numpy as np
 import sys
+import random
+
+import numpy as np
 
 from agent import Agent
 
@@ -29,3 +31,6 @@ if __name__ == "__main__":
     agent = Agent()
     agent.set_data(data)
     agent.set_learning_factor(0.5)
+    agent.set_rt(np.array([random.randint(-10, 10) for i in range(22)]))
+
+    print agent.compute_next_rt()
