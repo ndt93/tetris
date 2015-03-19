@@ -18,11 +18,12 @@ public class PlayerSkeleton {
     public static final int[][] pWidth = State.getpWidth();
     public static final int[][] pHeight = State.getpHeight();
 
+    // Factor for scaling reward against utility
+    private static final int REWARD_FACTOR = 5;
+
 	// Implement this function to have a working system
 	public int pickMove(State s, int[][] legalMoves) {
 
-        int n = legalMoves.length;
-        
         // Record the move that produces max utility and reward
         int moveWithMaxUtilityAndReward = 0;
         int maxUtilityAndReward = -1;
@@ -42,14 +43,14 @@ public class PlayerSkeleton {
 
             // The move does not result in end game, we proceed to evaluate
             if (rowRemoved != -1) {
-                int reward = rowRemoved;
+                int reward = rowRemoved * REWARD_FACTOR;
                 int utility = evalUtility(simulatedNextField,
                         simulatedColumnHeights);
 
                 if (reward + utility > maxUtilityAndReward) {
                     if (DEBUG) {
-                        System.out.println("Reward: " + reward + ", Utility:"
-                                + utility);
+                        System.out.println("Move: " + i + ", Reward: " + reward
+                                + ", Utility:" + utility);
                     }
                     maxUtilityAndReward = reward + utility;
                     moveWithMaxUtilityAndReward = i;
@@ -59,24 +60,48 @@ public class PlayerSkeleton {
         
         // In the case where all moves lead to losing, it will choose the first
         // move with index 0
+        if (DEBUG) {
+            System.out.println();
+            System.out.println("Choice: " + "Move: "
+                    + moveWithMaxUtilityAndReward + ", Reward+Utility:"
+                    + maxUtilityAndReward);
+            System.out.println();
+        }
         int pick = moveWithMaxUtilityAndReward;
         return pick;
 	}
 	
     private int evalUtility(int[][] field, int[] columnHeights) {
         double utility = 0.0;
-        double column_height_weight = 0.1;
+        double absoulte_column_height_weight = 0.05;
+        double relative_column_height_weight = 0.5;
 
-        // Add utility for column heights
+        double utility_to_be_added = 0.0;
+
+        // Add utility for absolute column heights
         // The more rows left for each column, the higher the utility
         for (int i = 0; i < columnHeights.length; i++) {
-            if (DEBUG) {
-                System.out.println("Utility to be added:"
-                        + (ROWS - columnHeights[i]));
-            }
-            utility += column_height_weight * (ROWS - columnHeights[i]);
+            utility_to_be_added = absoulte_column_height_weight
+                    * (ROWS - columnHeights[i]);
+            // if (DEBUG) {
+            // System.out.println("Utility added for absolute:"
+            // + utility_to_be_added);
+            // }
+            utility += utility_to_be_added;
         }
 
+        // Add utility for relative heights for neighboring columns
+        int height_diff = 0;
+        for (int i = 0; i < columnHeights.length - 1; i++) {
+            height_diff += Math.abs(columnHeights[i] - columnHeights[i + 1]);
+        }
+        utility_to_be_added = relative_column_height_weight
+                * (ROWS - height_diff);
+        // if (DEBUG) {
+        // System.out.println("Utility added for relative:"
+        // + utility_to_be_added);
+        // }
+        utility += utility_to_be_added;
         return (int) utility;
     }
 
