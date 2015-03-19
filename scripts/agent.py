@@ -26,6 +26,7 @@ class Agent:
         self.rewards = []
 
         for game in data:
+            game = np.vstack((game, np.zeros(self.num_features + 1)))
             self.data.append(game[:, :-1])
             self.rewards.append(game[:, -1:])
 
@@ -34,11 +35,6 @@ class Agent:
         The evaluation function value for the set of weights (vector) r
         at the mth game and kth board state
         """
-        Nm = self.data[m].shape[0] - 1
-
-        if (k == Nm):
-            return 0
-
         return np.dot(r, self.data[m][k])
 
     def eval_func_der(self, m, k, r, i):
