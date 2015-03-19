@@ -197,10 +197,13 @@ public class PlayerSkeleton {
     }
 
 	public static void main(String[] args) {
+        State s;
+        TFrame t;
         for (int i = 0; i < NO_OF_GAMES; i++) {
 
-            State s = new State();
-            new TFrame(s);
+            s = new State();
+            t = new TFrame(s);
+
             PlayerSkeleton p = new PlayerSkeleton();
 
             while(!s.hasLost()) {
@@ -213,6 +216,11 @@ public class PlayerSkeleton {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+            }
+
+            // Remove the windows as we finish the game, leave the last window
+            if (i < NO_OF_GAMES - 1) {
+                t.dispose();
             }
 
             System.out.println("You have completed " + s.getRowsCleared()
