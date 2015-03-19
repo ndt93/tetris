@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 public class PlayerSkeleton {
 
-    public static boolean DEBUG = true;
+    public static boolean DEBUG = false;
 
     // Make copies of static variables
     public static final int ORIENT = State.ORIENT;
@@ -22,10 +22,10 @@ public class PlayerSkeleton {
     private static final int REWARD_FACTOR = 5;
 
     // Waiting time between consecutive moves
-    private static final long WAITING_TIME = 1000;
+    private static final long WAITING_TIME = 0;
 
     // Total number of games to be played
-    private static final int NO_OF_GAMES = 1;
+    private static final int NO_OF_GAMES = 40;
     
 //    Weights
     private static double[] absoulte_column_height_weight;
