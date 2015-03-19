@@ -1,9 +1,15 @@
+import java.util.Random;
+
 
 public class PlayerSkeleton {
 
 	// Implement this function to have a working system
 	public int pickMove(State s, int[][] legalMoves) {
-		return 0;
+
+        // Fully randomized approach
+        int n = legalMoves.length;
+        int pick = new Random().nextInt(n);
+        return pick;
 	}
 	
 	public static void main(String[] args) {
@@ -17,7 +23,7 @@ public class PlayerSkeleton {
 			s.drawNext(0, 0);
 
 			try {
-				Thread.sleep(300);
+                Thread.sleep(1000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
