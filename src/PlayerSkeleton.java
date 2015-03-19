@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 public class PlayerSkeleton {
 
-    public static boolean DEBUG = false;
+    public static boolean DEBUG = true;
 
     // Make copies of static variables
     public static final int ORIENT = State.ORIENT;
@@ -22,17 +22,24 @@ public class PlayerSkeleton {
     private static final int REWARD_FACTOR = 5;
 
     // Waiting time between consecutive moves
-    private static final long WAITING_TIME = 0;
+    private static final long WAITING_TIME = 1000;
 
     // Total number of games to be played
-    private static final int NO_OF_GAMES = 10;
+    private static final int NO_OF_GAMES = 1;
+    
+//    Weights
+    private static double[] absoulte_column_height_weight;
+    private static double[] relative_column_height_weight;
+    private static double highest_column_height_weight;
+    private static double holes_weight;
+
 
 	// Implement this function to have a working system
 	public int pickMove(State s, int[][] legalMoves) {
 
         // Record the move that produces max utility and reward
         int moveWithMaxUtilityAndReward = 0;
-        int maxUtilityAndReward = -1;
+        int maxUtilityAndReward = -9999;
 
         int[][] currentField = deepCopy2D(s.getField());
         int[] currentColumnHeights = deepCopy(s.getTop());
@@ -50,14 +57,15 @@ public class PlayerSkeleton {
             // The move does not result in end game, we proceed to evaluate
             if (rowRemoved != -1) {
                 int reward = rowRemoved * REWARD_FACTOR;
-                int utility = evalUtility(simulatedNextField,
+                int utility = evalUtility(i, simulatedNextField,
                         simulatedColumnHeights);
-
+                if (DEBUG) {
+                    System.out.println("Eval: Move: " + i + ", Reward: "
+                            + reward
+                            + ", Utility:" + utility);
+                }
                 if (reward + utility > maxUtilityAndReward) {
-                    if (DEBUG) {
-                        System.out.println("Move: " + i + ", Reward: " + reward
-                                + ", Utility:" + utility);
-                    }
+
                     maxUtilityAndReward = reward + utility;
                     moveWithMaxUtilityAndReward = i;
                 }
@@ -77,18 +85,16 @@ public class PlayerSkeleton {
         return pick;
 	}
 	
-    private int evalUtility(int[][] field, int[] columnHeights) {
+    private int evalUtility(int move, int[][] field, int[] columnHeights) {
         double utility = 0.0;
-        double absoulte_column_height_weight = 0.05;
-        double relative_column_height_weight = 0.5;
 
         double utility_to_be_added = 0.0;
 
         // Add utility for absolute column heights
         // The more rows left for each column, the higher the utility
         for (int i = 0; i < columnHeights.length; i++) {
-            utility_to_be_added = absoulte_column_height_weight
-                    * (ROWS - columnHeights[i]);
+            utility_to_be_added = absoulte_column_height_weight[i]
+                    * columnHeights[i];
             // if (DEBUG) {
             // System.out.println("Utility added for absolute:"
             // + utility_to_be_added);
@@ -99,16 +105,72 @@ public class PlayerSkeleton {
         // Add utility for relative heights for neighboring columns
         int height_diff = 0;
         for (int i = 0; i < columnHeights.length - 1; i++) {
-            height_diff += Math.abs(columnHeights[i] - columnHeights[i + 1]);
+            height_diff = Math.abs(columnHeights[i] - columnHeights[i + 1]);
+            utility_to_be_added = relative_column_height_weight[i]
+                    * height_diff;
+            utility += utility_to_be_added;
+            // if (DEBUG) {
+            // System.out.println("Utility added for relative:"
+            // + utility_to_be_added);
+            // }
         }
-        utility_to_be_added = relative_column_height_weight
-                * (ROWS - height_diff);
-        // if (DEBUG) {
-        // System.out.println("Utility added for relative:"
-        // + utility_to_be_added);
-        // }
+
+        // Add utility for max height of column
+        int highest = 0;
+        for (int i = 0; i < columnHeights.length; i++) {
+            if (columnHeights[i] > highest) {
+                highest = columnHeights[i];
+            }
+        }
+        utility += highest_column_height_weight * highest;
+
+        // Add utility for holes
+        int no_of_holes = getNumberOfHoles(field);
+        utility_to_be_added = holes_weight * no_of_holes;
+        if (DEBUG) {
+            System.out.println("Move: " + move + ", No of holes: "
+                    + no_of_holes
+                    + ", utility added for holes:" + utility_to_be_added);
+        }
         utility += utility_to_be_added;
+
         return (int) utility;
+    }
+
+    private int getNumberOfHoles(int[][] field) {
+        int count = 0;
+        for (int i = 0; i < field.length; i++) {
+            for (int j = 0; j < field[i].length; j++) {
+                if (isHole(i, j, field)) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
+    private boolean isHole(int i, int j, int[][] field) {
+        if (field[i][j] != 0) {
+            return false;
+        }
+
+        // Row - 1, down
+        if (i - 1 >= 0 && field[i - 1][j] == 0) {
+            return false;
+        }
+        // Row + 1, up
+        if (i + 1 < ROWS && field[i + 1][j] == 0) {
+            return false;
+        }
+        // Column + 1, right
+        if (j + 1 < COLS && field[i][j + 1] == 0) {
+            return false;
+        }
+        // Column - 1, left
+        if (j - 1 >= 0 && field[i][j - 1] == 0) {
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -128,7 +190,7 @@ public class PlayerSkeleton {
         // Initialize state-related variables
 
         int nextPiece = s.getNextPiece();
-        int turn = s.getTurnNumber();
+        int turn = s.getTurnNumber() + 1;
 
         // Height if the first column makes contact
         int height = top[slot] - pBottom[nextPiece][orient][0];
@@ -206,6 +268,8 @@ public class PlayerSkeleton {
 
             PlayerSkeleton p = new PlayerSkeleton();
 
+            initializeWeights();
+
             while(!s.hasLost()) {
                 s.makeMove(p.pickMove(s, s.legalMoves()));
                 s.draw();
@@ -228,6 +292,24 @@ public class PlayerSkeleton {
         }
 
 	}
+
+    private static void initializeWeights() {
+        absoulte_column_height_weight = new double[COLS];
+        for (int i1 = 0; i1 < absoulte_column_height_weight.length; i1++) {
+            absoulte_column_height_weight[i1] = -0.05;
+        }
+
+        relative_column_height_weight = new double[COLS - 1];
+        for (int i1 = 0; i1 < relative_column_height_weight.length; i1++) {
+            relative_column_height_weight[i1] = -0.5;
+        }
+
+        highest_column_height_weight = -0.5;
+        holes_weight = -1.0;
+
+        assert (absoulte_column_height_weight.length == 10);
+        assert (relative_column_height_weight.length == 9);
+    }
 	
     public static int[][] deepCopy2D(int[][] original) {
         if (original == null) {
