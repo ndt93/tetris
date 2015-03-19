@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 public class PlayerSkeleton {
 
-    public static boolean DEBUG = true;
+    public static boolean DEBUG = false;
 
     // Make copies of static variables
     public static final int ORIENT = State.ORIENT;
@@ -20,6 +20,12 @@ public class PlayerSkeleton {
 
     // Factor for scaling reward against utility
     private static final int REWARD_FACTOR = 5;
+
+    // Waiting time between consecutive moves
+    private static final long WAITING_TIME = 0;
+
+    // Total number of games to be played
+    private static final int NO_OF_GAMES = 10;
 
 	// Implement this function to have a working system
 	public int pickMove(State s, int[][] legalMoves) {
@@ -191,23 +197,28 @@ public class PlayerSkeleton {
     }
 
 	public static void main(String[] args) {
-		State s = new State();
-		new TFrame(s);
-		PlayerSkeleton p = new PlayerSkeleton();
+        for (int i = 0; i < NO_OF_GAMES; i++) {
 
-		while(!s.hasLost()) {
-			s.makeMove(p.pickMove(s, s.legalMoves()));
-			s.draw();
-			s.drawNext(0, 0);
+            State s = new State();
+            new TFrame(s);
+            PlayerSkeleton p = new PlayerSkeleton();
 
-			try {
-                Thread.sleep(100);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
+            while(!s.hasLost()) {
+                s.makeMove(p.pickMove(s, s.legalMoves()));
+                s.draw();
+                s.drawNext(0, 0);
 
-		System.out.println("You have completed " + s.getRowsCleared() + " rows.");
+                try {
+                    Thread.sleep(WAITING_TIME);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            System.out.println("You have completed " + s.getRowsCleared()
+                    + " rows.");
+        }
+
 	}
 	
     public static int[][] deepCopy2D(int[][] original) {
