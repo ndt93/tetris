@@ -40,6 +40,10 @@ public class PlayerSkeleton {
     // 22 feature values followed by reward value
     int[][] utility_reward_values;
 
+    // Record number of board state printed
+    static int number_of_board_states = 1;
+    static int MAX_BOARD_STATE = 2000;
+
 	// Implement this function to have a working system
 	public int pickMove(State s, int[][] legalMoves) {
 
@@ -97,13 +101,16 @@ public class PlayerSkeleton {
         int pick = moveWithMaxUtilityAndReward;
 
         // Print the feature and reward values for interfacing with learner
-        for (int i = 0; i < utility_reward_values[pick].length; i++) {
-            System.out.print(utility_reward_values[pick][i]);
-            System.out.print(' ');
+        // Do not print the last state
+        if (utility_reward_values[pick][0] != 0
+                && number_of_board_states < MAX_BOARD_STATE) {
+            number_of_board_states++;
+            for (int i = 0; i < utility_reward_values[pick].length; i++) {
+                System.out.print(utility_reward_values[pick][i]);
+                System.out.print(' ');
+            }
+            System.out.println();
         }
-        System.out.println();
-
-
         return pick;
 	}
 	
@@ -328,13 +335,22 @@ public class PlayerSkeleton {
                 }
             }
 
-            // Remove the windows as we finish the game, leave the last window
-            if (i < NO_OF_GAMES - 1) {
+            // Remove the windows as we finish the game
+            if (i < NO_OF_GAMES) {
                 t.dispose();
             }
-            System.out.println("#");
-            System.out.println("You have completed " + s.getRowsCleared()
-                    + " rows.");
+
+            // Print signal for next game
+            if (i != NO_OF_GAMES - 1) {
+                System.out.println("#");
+            }
+            number_of_board_states = 1;
+
+            if (DEBUG) {
+                System.out.println("You have completed " + s.getRowsCleared()
+                        + " rows.");
+            }
+
         }
 
 	}
