@@ -27,10 +27,12 @@ def read_data(filename):
 
 if __name__ == "__main__":
     data = read_data(sys.argv[1])
+    num_iter = int(sys.argv[2])
 
     agent = Agent()
     agent.set_data(data)
     agent.set_learning_factor(0.5)
     agent.set_rt(np.array([random.randint(-10, 10) for i in range(22)]))
+    agent.set_iter(num_iter)
 
     print agent.compute_next_rt()

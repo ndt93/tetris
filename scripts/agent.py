@@ -12,6 +12,7 @@ class Agent:
         self.data = []  # The features' values for all the games
         self.rewards = []  # Reward values for moving from 1 state to the next
         self.rt = np.array([])
+        self.max_iter = 50
 
     def set_learning_factor(self, learning_factor):
         assert(learning_factor >= 0 and learning_factor <= 1)
@@ -20,6 +21,9 @@ class Agent:
     def set_rt(self, rt):
         assert(len(rt) == self.num_features)
         self.rt = rt
+
+    def set_iter(self, max_iter):
+        self.max_iter = max_iter
 
     def set_data(self, data):
         self.data = []
@@ -115,7 +119,7 @@ class Agent:
 
         res = minimize(self.optimized_func, r0, method='BFGS',
                        jac=self.optimized_func_der,
-                       options={'maxiter': 2, 'disp': True},
+                       options={'maxiter': self.max_iter, 'disp': True},
                        callback=self.callback)
 
         return res.x
