@@ -37,7 +37,7 @@ def read_data(filename):
                 game = []
             else:
                 state = line.split()
-                state = [int(x) for x in state]
+                state = [float(x) for x in state]
                 game.append(state)
 
     data.append(np.array(game))
