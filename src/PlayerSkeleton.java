@@ -21,24 +21,26 @@ public class PlayerSkeleton {
     public static final int[][] pHeight = State.getpHeight();
 
     // Factor for scaling reward against utility
-    private static final int REWARD_FACTOR = 1;
+    private static final double REWARD_FACTOR = 1;
 
     // Waiting time between consecutive moves
     private static final long WAITING_TIME = 0;
 
     // Total number of games to be played
-    private static int NO_OF_GAMES = 40;
-    
-//    Weights
+    private static int NO_OF_GAMES = 1;
+
+    // Weights
     private static double constant_weight;
     private static double[] absoulte_column_height_weight;
     private static double[] relative_column_height_weight;
     private static double highest_column_height_weight;
     private static double holes_weight;
 
+    private static double[][] features;
+
     // Record the utility and reward values of all moves for printing
     // 22 feature values followed by reward value
-    int[][] utility_reward_values;
+    double[][] utility_reward_values;
 
     // Record number of board state printed
     static int number_of_board_states = 1;
@@ -48,11 +50,12 @@ public class PlayerSkeleton {
 	public int pickMove(State s, int[][] legalMoves) {
 
         // initialize value array for all moves
-        utility_reward_values = new int[legalMoves.length][23];
+        utility_reward_values = new double[legalMoves.length][23];
+        features = new double[legalMoves.length][23];
 
         // Record the move that produces max utility and reward
         int moveWithMaxUtilityAndReward = 0;
-        int maxUtilityAndReward = -9999;
+        double maxUtilityAndReward = -9999;
 
         int[][] currentField = deepCopy2D(s.getField());
         int[] currentColumnHeights = deepCopy(s.getTop());
@@ -64,57 +67,66 @@ public class PlayerSkeleton {
             simulatedNextField = deepCopy2D(currentField);
             simulatedColumnHeights = deepCopy(currentColumnHeights);
             int rowRemoved = tryMakeMove(legalMoves[i][ORIENT],
-                    legalMoves[i][SLOT], s, simulatedNextField,
-                    simulatedColumnHeights);
+                                         legalMoves[i][SLOT],
+                                         s, simulatedNextField,
+                                         simulatedColumnHeights);
 
             // The move does not result in end game, we proceed to evaluate
             if (rowRemoved != -1) {
-                int reward = rowRemoved * REWARD_FACTOR;
+                double reward = rowRemoved * REWARD_FACTOR;
 
                 // Update constant and reward value for the move for printing
-                utility_reward_values[i][0] = (int) constant_weight;
+                features[i][0] = 1;
+                features[i][22] = reward;
+                utility_reward_values[i][0] = constant_weight;
                 utility_reward_values[i][22] = reward;
-                int utility = evalUtility(i, simulatedNextField,
-                        simulatedColumnHeights);
-                if (DEBUG) {
-                    System.out.println("Eval: Move: " + i + ", Reward: "
-                            + reward
-                            + ", Utility:" + utility);
-                }
-                if (reward + utility > maxUtilityAndReward) {
 
+                double utility = evalUtility(i, simulatedNextField,
+                                             simulatedColumnHeights);
+                utility += constant_weight;
+
+                if (DEBUG) {
+                    System.out.println("Eval: Move: " + i + ", Reward: " +
+                                       reward +
+                                       ", Utility:" + utility);
+                }
+
+                if (reward + utility > maxUtilityAndReward) {
                     maxUtilityAndReward = reward + utility;
                     moveWithMaxUtilityAndReward = i;
                 }
             }
         }
-        
+
         // In the case where all moves lead to losing, it will choose the first
         // move with index 0
         if (DEBUG) {
             System.out.println();
-            System.out.println("Choice: " + "Move: "
-                    + moveWithMaxUtilityAndReward + ", Reward+Utility:"
-                    + maxUtilityAndReward);
+            System.out.println("Choice: " + "Move: " +
+                               moveWithMaxUtilityAndReward +
+                               ", Reward+Utility:"
+                               + maxUtilityAndReward);
             System.out.println();
         }
+
         int pick = moveWithMaxUtilityAndReward;
 
         // Print the feature and reward values for interfacing with learner
         // Do not print the last state
-        if (utility_reward_values[pick][0] != 0
-                && number_of_board_states < MAX_BOARD_STATE) {
+        if (utility_reward_values[pick][0] != 0 &&
+            number_of_board_states < MAX_BOARD_STATE) {
             number_of_board_states++;
-            for (int i = 0; i < utility_reward_values[pick].length; i++) {
-                System.out.print(utility_reward_values[pick][i]);
+
+            for (int i = 0; i < features[pick].length; i++) {
+                System.out.print(features[pick][i]);
                 System.out.print(' ');
             }
             System.out.println();
         }
         return pick;
 	}
-	
-    private int evalUtility(int move, int[][] field, int[] columnHeights) {
+
+    private double evalUtility(int move, int[][] field, int[] columnHeights) {
         double utility = 0.0;
 
         double utility_to_be_added = 0.0;
@@ -122,16 +134,13 @@ public class PlayerSkeleton {
         // Add utility for absolute column heights
         // The more rows left for each column, the higher the utility
         for (int i = 0; i < columnHeights.length; i++) {
-            utility_to_be_added = absoulte_column_height_weight[i]
-                    * columnHeights[i];
+            utility_to_be_added = absoulte_column_height_weight[i] *
+                                  columnHeights[i];
 
-            // update index 1 to 10
-            utility_reward_values[move][i + 1] = (int) utility_to_be_added;
+            // Update index 1 to 10
+            features[move][i] = columnHeights[i];
+            utility_reward_values[move][i + 1] = utility_to_be_added;
 
-            // if (DEBUG) {
-            // System.out.println("Utility added for absolute:"
-            // + utility_to_be_added);
-            // }
             utility += utility_to_be_added;
         }
 
@@ -139,17 +148,14 @@ public class PlayerSkeleton {
         int height_diff = 0;
         for (int i = 0; i < columnHeights.length - 1; i++) {
             height_diff = Math.abs(columnHeights[i] - columnHeights[i + 1]);
-            utility_to_be_added = relative_column_height_weight[i]
-                    * height_diff;
+            utility_to_be_added = relative_column_height_weight[i] *
+                                  height_diff;
 
-            // update index 11 to 19
-            utility_reward_values[move][i + 11] = (int) utility_to_be_added;
+            // Update index 11 to 19
+            features[move][i + 11] = height_diff;
+            utility_reward_values[move][i + 11] = utility_to_be_added;
 
             utility += utility_to_be_added;
-            // if (DEBUG) {
-            // System.out.println("Utility added for relative:"
-            // + utility_to_be_added);
-            // }
         }
 
         // Add utility for max height of column
@@ -162,7 +168,8 @@ public class PlayerSkeleton {
         utility_to_be_added = highest_column_height_weight * highest;
 
         // update index 20
-        utility_reward_values[move][20] = (int) utility_to_be_added;
+        features[move][20] = highest;
+        utility_reward_values[move][20] = utility_to_be_added;
 
         utility += utility_to_be_added;
 
@@ -171,15 +178,18 @@ public class PlayerSkeleton {
         utility_to_be_added = holes_weight * no_of_holes;
         if (DEBUG) {
             System.out.println("Move: " + move + ", No of holes: "
-                    + no_of_holes
-                    + ", utility added for holes:" + utility_to_be_added);
+                               + no_of_holes
+                               + ", utility added for holes:" +
+                               utility_to_be_added);
         }
-        // update index 21
-        utility_reward_values[move][21] = (int) utility_to_be_added;
+
+        // Update index 21
+        features[move][21] = no_of_holes;
+        utility_reward_values[move][21] = utility_to_be_added;
 
         utility += utility_to_be_added;
 
-        return (int) utility;
+        return utility;
     }
 
     private int getNumberOfHoles(int[][] field) {
@@ -220,10 +230,10 @@ public class PlayerSkeleton {
 
     /**
      * Simulate the effect of making a specific move
-     * 
+     *
      * Modifies simulated next field and height of each column for further
      * evaluation
-     * 
+     *
      * @param orient
      * @param slot
      * @param s
@@ -400,7 +410,7 @@ public class PlayerSkeleton {
         assert (absoulte_column_height_weight.length == 10);
         assert (relative_column_height_weight.length == 9);
     }
-	
+
     public static int[][] deepCopy2D(int[][] original) {
         if (original == null) {
             return null;
