@@ -11,7 +11,6 @@ public class PlayerSkeleton {
     // Make copies of static variables
     public static final int ORIENT = State.ORIENT;
     public static final int SLOT = State.SLOT;
-
     public static final int COLS = State.COLS;
     public static final int ROWS = State.ROWS;
     public static final int N_PIECES = State.N_PIECES;
@@ -27,7 +26,7 @@ public class PlayerSkeleton {
     private static final long WAITING_TIME = 0;
 
     // Total number of games to be played
-    private static int NO_OF_GAMES = 1;
+    private static int NO_OF_GAMES = 10;
 
     // Weights
     private static double constant_weight;
@@ -36,11 +35,11 @@ public class PlayerSkeleton {
     private static double highest_column_height_weight;
     private static double holes_weight;
 
-    private static double[][] features;
+
 
     // Record the utility and reward values of all moves for printing
     // 22 feature values followed by reward value
-    double[][] utility_reward_values;
+    private static double[][] features;
 
     // Record number of board state printed
     static int number_of_board_states = 1;
@@ -50,7 +49,6 @@ public class PlayerSkeleton {
 	public int pickMove(State s, int[][] legalMoves) {
 
         // initialize value array for all moves
-        utility_reward_values = new double[legalMoves.length][23];
         features = new double[legalMoves.length][23];
 
         // Record the move that produces max utility and reward
@@ -77,9 +75,7 @@ public class PlayerSkeleton {
 
                 // Update constant and reward value for the move for printing
                 features[i][0] = 1;
-                features[i][22] = reward;
-                utility_reward_values[i][0] = constant_weight;
-                utility_reward_values[i][22] = reward;
+                features[i][22] = rowRemoved;
 
                 double utility = evalUtility(i, simulatedNextField,
                                              simulatedColumnHeights);
@@ -113,7 +109,7 @@ public class PlayerSkeleton {
 
         // Print the feature and reward values for interfacing with learner
         // Do not print the last state
-        if (utility_reward_values[pick][0] != 0 &&
+        if (features[pick][0] != 0 &&
             number_of_board_states < MAX_BOARD_STATE) {
             number_of_board_states++;
 
@@ -138,8 +134,7 @@ public class PlayerSkeleton {
                                   columnHeights[i];
 
             // Update index 1 to 10
-            features[move][i] = columnHeights[i];
-            utility_reward_values[move][i + 1] = utility_to_be_added;
+            features[move][i + 1] = columnHeights[i];
 
             utility += utility_to_be_added;
         }
@@ -153,7 +148,6 @@ public class PlayerSkeleton {
 
             // Update index 11 to 19
             features[move][i + 11] = height_diff;
-            utility_reward_values[move][i + 11] = utility_to_be_added;
 
             utility += utility_to_be_added;
         }
@@ -169,7 +163,6 @@ public class PlayerSkeleton {
 
         // update index 20
         features[move][20] = highest;
-        utility_reward_values[move][20] = utility_to_be_added;
 
         utility += utility_to_be_added;
 
@@ -185,7 +178,6 @@ public class PlayerSkeleton {
 
         // Update index 21
         features[move][21] = no_of_holes;
-        utility_reward_values[move][21] = utility_to_be_added;
 
         utility += utility_to_be_added;
 
@@ -360,25 +352,27 @@ public class PlayerSkeleton {
 
     private static void initializeWeights(String[] args) {
         // args[1] for constant
-        constant_weight = Integer.parseInt(args[1]);
+        constant_weight = Double.parseDouble(args[1]);
 
         // args[2] to args[11] for absolute column heights
         absoulte_column_height_weight = new double[COLS];
         for (int i1 = 0; i1 < absoulte_column_height_weight.length; i1++) {
-            absoulte_column_height_weight[i1] = Integer.parseInt(args[2 + i1]);
+            absoulte_column_height_weight[i1] = Double
+                    .parseDouble(args[2 + i1]);
         }
 
         // args[12] to args[20] for relative column heights
         relative_column_height_weight = new double[COLS - 1];
         for (int i1 = 0; i1 < relative_column_height_weight.length; i1++) {
-            relative_column_height_weight[i1] = Integer.parseInt(args[12 + i1]);
+            relative_column_height_weight[i1] = Double
+                    .parseDouble(args[12 + i1]);
         }
 
         // args[21] for relative column heights
-        highest_column_height_weight = Integer.parseInt(args[21]);
+        highest_column_height_weight = Double.parseDouble(args[21]);
 
         // args[22] for relative column heights
-        holes_weight = Integer.parseInt(args[22]);
+        holes_weight = Double.parseDouble(args[22]);
 
         assert (absoulte_column_height_weight.length == 10);
         assert (relative_column_height_weight.length == 9);
