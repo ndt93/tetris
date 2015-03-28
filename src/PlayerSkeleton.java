@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 public class PlayerSkeleton {
 
-    public static boolean DEBUG = false;
+    public static boolean DEBUG = true;
 
     public static boolean PRINT_UTILITY = true;
 
@@ -209,23 +209,16 @@ public class PlayerSkeleton {
             return false;
         }
 
-        // Row - 1, down
-        if (i - 1 >= 0 && field[i - 1][j] == 0) {
-            return false;
+        int cur_row = i + 1;
+        while (cur_row < ROWS) {
+            if (field[cur_row][j] == 1) {
+                return true;
+            }
+
+            cur_row += 1;
         }
-        // Row + 1, up
-        if (i + 1 < ROWS && field[i + 1][j] == 0) {
-            return false;
-        }
-        // Column + 1, right
-        if (j + 1 < COLS && field[i][j + 1] == 0) {
-            return false;
-        }
-        // Column - 1, left
-        if (j - 1 >= 0 && field[i][j - 1] == 0) {
-            return false;
-        }
-        return true;
+
+        return false;
     }
 
     /**
