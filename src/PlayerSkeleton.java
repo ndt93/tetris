@@ -6,9 +6,9 @@ public class PlayerSkeleton {
 
     public static boolean DEBUG = false;
 
-    public static boolean PRINT_UTILITY = false;
+    public static boolean PRINT_UTILITY = true;
 
-    public static boolean PRINT_LINES_CLEARED = true;
+    public static boolean PRINT_LINES_CLEARED = false;
 
     // Make copies of static variables
     public static final int ORIENT = State.ORIENT;
@@ -25,7 +25,7 @@ public class PlayerSkeleton {
     private static final double REWARD_FACTOR = 1;
 
     // Waiting time between consecutive moves
-    private static final long WAITING_TIME = 50;
+    private static final long WAITING_TIME = 0;
 
     // Total number of games to be played
     private static int NO_OF_GAMES = 10;
@@ -339,7 +339,7 @@ public class PlayerSkeleton {
             }
 
             // Print signal for next game
-            if (i != 0) {
+            if (i != NO_OF_GAMES - 1) {
                 System.out.println("#");
             }
             number_of_board_states = 1;
