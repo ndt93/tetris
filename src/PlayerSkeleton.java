@@ -4,9 +4,11 @@ import java.util.Arrays;
 
 public class PlayerSkeleton {
 
-    public static boolean DEBUG = true;
+    public static boolean DEBUG = false;
 
     public static boolean PRINT_UTILITY = true;
+
+    public static boolean PRINT_LINES_CLEARED = false;
 
     // Make copies of static variables
     public static final int ORIENT = State.ORIENT;
@@ -203,7 +205,7 @@ public class PlayerSkeleton {
 
         int cur_row = i + 1;
         while (cur_row < ROWS) {
-            if (field[cur_row][j] == 1) {
+            if (field[cur_row][j] != 0) {
                 return true;
             }
 
@@ -341,7 +343,7 @@ public class PlayerSkeleton {
             }
             number_of_board_states = 1;
 
-            if (DEBUG) {
+            if (PRINT_LINES_CLEARED) {
                 System.out.println("You have completed " + s.getRowsCleared()
                         + " rows.");
             }
