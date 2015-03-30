@@ -6,9 +6,9 @@ public class PlayerSkeleton {
 
     public static boolean DEBUG = false;
 
-    public static boolean PRINT_UTILITY = true;
+    public static boolean PRINT_UTILITY = false;
 
-    public static boolean PRINT_LINES_CLEARED = false;
+    public static boolean PRINT_LINES_CLEARED = true;
 
     // Make copies of static variables
     public static final int ORIENT = State.ORIENT;

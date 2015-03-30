@@ -8,7 +8,7 @@ class Agent:
     num_features = 22
 
     def __init__(self):
-        self.lf = 0.5  # Learning factor lambda
+        self.lf = 0.2  # Learning factor lambda
         self.data = []  # The features' values for all the games
         self.rewards = []  # Reward values for moving from 1 state to the next
         self.rt = np.array([])

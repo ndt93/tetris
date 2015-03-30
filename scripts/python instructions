@@ -1,0 +1,9 @@
+copy into learning_driver3.py, change dir to data3
+
+copy weight 0
+
+python learning_driver3.py 20 1 weight_data0
+
+after some time
+
+python learning_driver2.py 20 3 weight_data2
