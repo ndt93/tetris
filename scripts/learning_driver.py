@@ -30,16 +30,22 @@ def read_data(filename):
 
     with open(filename, 'r') as f:
         game = []
+        rows = []
 
         for line in f:
             if line[0] == '#':
                 data.append(np.array(game))
                 game = []
+            elif line[0] == "Y":
+                row = (line.split(" "))[3] 
+                rows.append(int(row))
             else:
                 state = line.split()
                 state = [float(x) for x in state]
                 game.append(state)
 
+    print("Average rows completed: "+ str(np.mean(rows)))
+    print("Max rows completed: "+ str(max(rows)))
     data.append(np.array(game))
     return data
 
@@ -68,7 +74,7 @@ if __name__ == "__main__":
             run_game()
             data = read_data(GAME_FILE+str(COUNT-1))
             agent.set_data(data)
-            agent.set_learning_factor(0.5)
+            agent.set_learning_factor(0.02)
             agent.set_rt(np.array(WEIGHTS))
             WEIGHTS = agent.compute_next_rt()
             INIT_VALS = ' '.join(["%.4f"%w for w in WEIGHTS])
