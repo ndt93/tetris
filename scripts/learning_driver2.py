@@ -68,7 +68,7 @@ if __name__ == "__main__":
             run_game()
             data = read_data(GAME_FILE+str(COUNT-1))
             agent.set_data(data)
-            agent.set_learning_factor(0.5)
+            agent.set_learning_factor(0.2)
             agent.set_rt(np.array(WEIGHTS))
             WEIGHTS = agent.compute_next_rt()
             INIT_VALS = ' '.join(["%.4f"%w for w in WEIGHTS])

@@ -1,4 +1,8 @@
+
+
 copy into learning_driver3.py, change dir to data3
+
+change lamba value in set_learning_factor in learning_driver3
 
 copy weight 0
 
