@@ -21,6 +21,7 @@ CMD = ['java', 'PlayerSkeleton', NUM_GAMES, INIT_VALS]
 def run_game():
     global COUNT, CMD, FILE_NAME
     print('Running game %s'%COUNT)
+    print('Running game %s'%CMD)
     with open(GAME_FILE+str(COUNT), 'w') as f:
         subprocess.call(CMD, stdout=f, cwd=PATH)
     COUNT+=1

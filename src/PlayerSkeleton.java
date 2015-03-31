@@ -306,9 +306,22 @@ public class PlayerSkeleton {
             NO_OF_GAMES = Integer.parseInt(args[0]);
             initializeWeights(args);
         } else if (args.length > 0) {
-            System.out.println("Invalid number of arguments, expected 23, got "
-                    + args.length);
-            System.exit(0);
+            NO_OF_GAMES = Integer.parseInt(args[0]);
+            // Parse two arguments into 23 arguments
+            if (args.length >= 2) {
+                System.out.println("1st argument: " + args[0]);
+                System.out.println("2nd argument: " + args[1]);
+                System.out.println("2nd argument length: "
+                        + args[1].split(" ").length);
+                String[] actual_args = new String[23];
+                actual_args[0] = args[0];
+                for (int i = 1; i < actual_args.length; i++) {
+                    actual_args[i] = args[1].split(" ")[i - 1];
+                }
+                initializeWeights(actual_args);
+            } else {
+                System.exit(0);
+            }
         } else {
             // Use default weights if arguments are not present
             initializeWeights();
