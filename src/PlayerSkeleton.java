@@ -111,9 +111,7 @@ public class PlayerSkeleton {
 
         // Print the feature and reward values for interfacing with learner
         // Do not print the last state
-        if (PRINT_UTILITY && features[pick][0] != 0
-                &&
-            number_of_board_states < MAX_BOARD_STATE) {
+        if (PRINT_UTILITY && features[pick][0] != 0) {
             number_of_board_states++;
 
             for (int i = 0; i < features[pick].length; i++) {
@@ -333,6 +331,11 @@ public class PlayerSkeleton {
                 }
             }
 
+            if (number_of_board_states > MAX_BOARD_STATE) {
+                t.dispose();
+                break;
+            }
+
             // Remove the windows as we finish the game
             if (i < NO_OF_GAMES) {
                 t.dispose();
@@ -342,7 +345,6 @@ public class PlayerSkeleton {
             if (i != NO_OF_GAMES - 1) {
                 System.out.println("#");
             }
-            number_of_board_states = 1;
 
             if (PRINT_LINES_CLEARED) {
                 System.out.println("You have completed " + s.getRowsCleared()
@@ -354,8 +356,6 @@ public class PlayerSkeleton {
 	}
 
     private static void initializeWeights(String[] args) {
-        // args[0] for number of games
-        NO_OF_GAMES = Integer.parseInt(args[0]);
 
         // args[1] for constant
         constant_weight = Double.parseDouble(args[1]);
