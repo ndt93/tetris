@@ -309,8 +309,7 @@ public class PlayerSkeleton {
             System.out.println("Invalid number of arguments, expected 23, got "
                     + args.length);
             System.exit(0);
-        }
-        {
+        } else {
             // Use default weights if arguments are not present
             initializeWeights();
         }
