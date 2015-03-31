@@ -8,7 +8,7 @@ public class PlayerSkeleton {
 
     public static boolean PRINT_UTILITY = true;
 
-    public static boolean PRINT_LINES_CLEARED = false;
+    public static boolean PRINT_LINES_CLEARED = true;
 
     // Make copies of static variables
     public static final int ORIENT = State.ORIENT;
@@ -349,6 +349,11 @@ public class PlayerSkeleton {
             }
 
             if (number_of_board_states > MAX_BOARD_STATE) {
+                // Do not proceed since we reached the max board state
+                if (PRINT_LINES_CLEARED) {
+                    System.out.println("You have completed " + s.getRowsCleared()
+                            + " rows.");
+                }
                 t.dispose();
                 break;
             }
