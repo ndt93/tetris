@@ -6,9 +6,9 @@ public class PlayerSkeleton {
 
     public static boolean DEBUG = false;
 
-    public static boolean PRINT_UTILITY = false;
+    public static boolean PRINT_UTILITY = true;
 
-    public static boolean PRINT_LINES_CLEARED = true;
+    public static boolean PRINT_LINES_CLEARED = false;
 
     // Make copies of static variables
     public static final int ORIENT = State.ORIENT;
@@ -45,7 +45,7 @@ public class PlayerSkeleton {
 
     // Record number of board state printed
     static int number_of_board_states = 1;
-    static int MAX_BOARD_STATE = 2000;
+    static int MAX_BOARD_STATE = 4000;
 
 	// Implement this function to have a working system
 	public int pickMove(State s, int[][] legalMoves) {
