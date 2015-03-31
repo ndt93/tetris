@@ -354,6 +354,9 @@ public class PlayerSkeleton {
 	}
 
     private static void initializeWeights(String[] args) {
+        // args[0] for number of games
+        NO_OF_GAMES = Integer.parseInt(args[0]);
+
         // args[1] for constant
         constant_weight = Double.parseDouble(args[1]);
 
