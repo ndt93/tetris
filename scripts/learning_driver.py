@@ -22,6 +22,7 @@ def run_game():
     global COUNT, CMD, FILE_NAME
     print('Running game %s'%COUNT)
     with open(GAME_FILE+str(COUNT), 'w') as f:
+        print(CMD)
         subprocess.call(CMD, stdout=f, cwd=PATH)
     COUNT+=1
 
@@ -58,6 +59,8 @@ arg3: initial weight_file
 
 if __name__ == "__main__":
     agent = Agent()
+    agent.set_learning_factor(0.02)
+    agent.set_iter(1)
 
     subprocess.call(['javac', 'PlayerSkeleton.java'], cwd=PATH) #Compile java files
     os.chdir('./data')
@@ -68,18 +71,17 @@ if __name__ == "__main__":
             weight = w.readline()
             WEIGHTS = [float(x) for x in weight.split()]
             INIT_VALS = ' '.join(["%.4f"%w for w in WEIGHTS])
+            CMD = ['java', 'PlayerSkeleton', NUM_GAMES, INIT_VALS]
             COUNT = int(sys.argv[2])
 
         for i in xrange(int(sys.argv[1])):
             run_game()
             data = read_data(GAME_FILE+str(COUNT-1))
             agent.set_data(data)
-            agent.set_learning_factor(0.02)
             agent.set_rt(np.array(WEIGHTS))
             WEIGHTS = agent.compute_next_rt()
             INIT_VALS = ' '.join(["%.4f"%w for w in WEIGHTS])
             CMD = ['java', 'PlayerSkeleton', NUM_GAMES, INIT_VALS]
-            print(CMD)
             with open(WEIGHT_FILE+str(COUNT-1),'w') as f:
                 f.write(INIT_VALS)
 
