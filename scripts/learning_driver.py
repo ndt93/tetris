@@ -78,6 +78,8 @@ if __name__ == "__main__":
             agent.set_rt(np.array(WEIGHTS))
             WEIGHTS = agent.compute_next_rt()
             INIT_VALS = ' '.join(["%.4f"%w for w in WEIGHTS])
+            CMD = ['java', 'PlayerSkeleton', NUM_GAMES, INIT_VALS]
+            print(CMD)
             with open(WEIGHT_FILE+str(COUNT-1),'w') as f:
                 f.write(INIT_VALS)
 
