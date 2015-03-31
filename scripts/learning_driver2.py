@@ -30,16 +30,22 @@ def read_data(filename):
 
     with open(filename, 'r') as f:
         game = []
+        rows = []
 
         for line in f:
             if line[0] == '#':
                 data.append(np.array(game))
                 game = []
+            elif line[0] == "Y":
+                row = (line.split(" "))[3] 
+                rows.append(int(row))
             else:
                 state = line.split()
                 state = [float(x) for x in state]
                 game.append(state)
 
+    print("Average rows completed: "+ str(np.mean(rows)))
+    print("Max rows completed: "+ str(max(rows)))
     data.append(np.array(game))
     return data
 
