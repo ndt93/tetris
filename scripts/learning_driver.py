@@ -60,7 +60,6 @@ arg3: initial weight_file
 if __name__ == "__main__":
     agent = Agent()
     agent.set_learning_factor(0.02)
-    agent.set_iter(1)
 
     subprocess.call(['javac', 'PlayerSkeleton.java'], cwd=PATH) #Compile java files
     os.chdir('./data')
@@ -72,6 +71,7 @@ if __name__ == "__main__":
             WEIGHTS = [float(x) for x in weight.split()]
             INIT_VALS = ' '.join(["%.4f"%w for w in WEIGHTS])
             CMD = ['java', 'PlayerSkeleton', NUM_GAMES, INIT_VALS]
+            print(CMD)
             COUNT = int(sys.argv[2])
 
         for i in xrange(int(sys.argv[1])):
