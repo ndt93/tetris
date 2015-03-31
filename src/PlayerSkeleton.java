@@ -45,7 +45,7 @@ public class PlayerSkeleton {
 
     // Record number of board state printed
     static int number_of_board_states = 1;
-    static int MAX_BOARD_STATE = 4000;
+    static int MAX_BOARD_STATE = 8000;
 
 	// Implement this function to have a working system
 	public int pickMove(State s, int[][] legalMoves) {
