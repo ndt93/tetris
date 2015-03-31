@@ -305,7 +305,12 @@ public class PlayerSkeleton {
             // Take in weights from the command line if present
             NO_OF_GAMES = Integer.parseInt(args[0]);
             initializeWeights(args);
-        } else {
+        } else if (args.length > 0) {
+            System.out.println("Invalid number of arguments, expected 23, got "
+                    + args.length);
+            System.exit(0);
+        }
+        {
             // Use default weights if arguments are not present
             initializeWeights();
         }
