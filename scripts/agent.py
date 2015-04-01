@@ -38,7 +38,7 @@ class Agent:
                 self.is_pause = True
                 os.kill(self.pid, signal.SIGSTOP)
             else:
-                print("Agent resume")
+                print("Agent resumed")
 
                 self.is_pause = False
                 os.kill(self.pid, signal.SIGCONT)
