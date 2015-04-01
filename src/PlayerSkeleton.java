@@ -8,7 +8,11 @@ public class PlayerSkeleton {
 
     public static boolean PRINT_UTILITY = true;
 
+    public static boolean PRINT_HASH_AFTER_EACH_GAME = true;
+
     public static boolean PRINT_LINES_CLEARED = true;
+
+
 
     // Make copies of static variables
     public static final int ORIENT = State.ORIENT;
@@ -364,7 +368,7 @@ public class PlayerSkeleton {
             }
 
             // Print signal for next game
-            if (i != NO_OF_GAMES - 1) {
+            if (PRINT_HASH_AFTER_EACH_GAME && i != NO_OF_GAMES - 1) {
                 System.out.println("#");
             }
 
