@@ -86,5 +86,5 @@ if __name__ == "__main__":
                 f.write(INIT_VALS)
 
     else:
-        print "Usage: python learning_driver.py iterations start_count weight_file\n\
-        weight_file can be found in ./data"
+        print ("Usage: python learning_driver.py iterations start_count weight_file\n\
+        weight_file can be found in ./data")

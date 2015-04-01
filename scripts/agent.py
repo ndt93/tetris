@@ -108,7 +108,7 @@ class Agent:
                          for i in range(len(r))])
 
     def callback(self, r):
-        print "Iteration %d completed" % (self.cur_iter)
+        print ("Iteration %d completed" % (self.cur_iter))
         self.cur_iter += 1
 
     def compute_next_rt(self):
