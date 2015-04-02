@@ -1,47 +1,19 @@
 import random
-from multiprocessing import Process, Queue
-import os
-import signal
-import time
+from datetime import datetime
 
 import numpy as np
 from scipy.optimize import minimize
-
-
-def minimize_wrapper(**kwargs):
-    kwargs['queue'].put(minimize(kwargs['func'], kwargs['x0'],
-                                 method=kwargs['method'], jac=kwargs['jac'],
-                                 options=kwargs['options'],
-                                 callback=kwargs['callback']))
 
 
 class Agent:
     num_features = 22
 
     def __init__(self):
-        signal.signal(signal.SIGTSTP, self.signal_handler)
-
         self.lf = 0.2  # Learning factor lambda
         self.data = []  # The features' values for all the games
         self.rewards = []  # Reward values for moving from 1 state to the next
         self.rt = np.array([])
         self.max_iter = 50
-
-        self.is_pause = False
-        self.pid = -1
-
-    def signal_handler(self, signum, frame):
-        if self.pid != -1:
-            if not self.is_pause:
-                print("Agent paused")
-
-                self.is_pause = True
-                os.kill(self.pid, signal.SIGSTOP)
-            else:
-                print("Agent resumed")
-
-                self.is_pause = False
-                os.kill(self.pid, signal.SIGCONT)
 
     def set_learning_factor(self, learning_factor):
         assert(learning_factor >= 0 and learning_factor <= 1)
@@ -137,30 +109,19 @@ class Agent:
                          for i in range(len(r))])
 
     def callback(self, r):
-        print ("Iteration %d completed" % (self.cur_iter))
+        print("Iteration %d completed at %s" %
+              (self.cur_iter, datetime.now().strftime("%d/%m/%Y %H:%M:%S")))
         self.cur_iter += 1
 
     def compute_next_rt(self):
         self.cur_iter = 1
-        q = Queue()
 
         r0 = np.array([random.randint(-10, 10)
                        for i in range(self.num_features)])
 
-        p = Process(target=minimize_wrapper,
-                    kwargs={'func': self.optimized_func,
-                            'x0': r0, 'method': 'BFGS',
-                            'jac': self.optimized_func_der,
-                            'options': {'maxiter': self.max_iter,
-                                        'disp': True},
-                            'callback': self.callback, 'queue': q})
+        res = minimize(self.optimized_func, r0, method='BFGS',
+                       jac=self.optimized_func_der,
+                       options={'maxiter': self.max_iter, 'disp': True},
+                       callback=self.callback)
 
-        p.start()
-        self.pid = p.pid
-        self.is_pause = False
-
-        while (p.is_alive()):
-            p.join()
-            time.sleep(1)
-
-        return q.get().x
+        return res.x
