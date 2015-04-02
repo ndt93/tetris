@@ -62,7 +62,7 @@ if __name__ == "__main__":
     agent.set_learning_factor(0.2)
 
     subprocess.call(['javac', 'PlayerSkeleton.java'], cwd=PATH) #Compile java files
-    os.chdir('./data2')
+    os.chdir('./data02')
 
     if len(sys.argv) == 4:
         #Initialization step for COUNT and WEIGHTS
@@ -74,7 +74,7 @@ if __name__ == "__main__":
             print(CMD)
             COUNT = int(sys.argv[2])
 
-        for i in xrange(int(sys.argv[1])):
+        for i in range(int(sys.argv[1])):
             run_game()
             data = read_data(GAME_FILE+str(COUNT-1))
             agent.set_data(data)
@@ -86,5 +86,5 @@ if __name__ == "__main__":
                 f.write(INIT_VALS)
 
     else:
-        print "Usage: python learning_driver.py iterations start_count weight_file\n\
-        weight_file can be found in ./data"
+        print ("Usage: python learning_driver.py iterations start_count weight_file\n\
+        weight_file can be found in ./data")
