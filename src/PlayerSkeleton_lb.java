@@ -3,7 +3,7 @@ import java.util.Arrays;
 
 
 
-public class PlayerSkeletonLB {
+public class PlayerSkeleton {
 
     public static boolean DEBUG = false;
 
@@ -342,7 +342,7 @@ public class PlayerSkeletonLB {
             s = new State();
             t = new TFrame(s);
 
-            PlayerSkeletonLB p = new PlayerSkeletonLB();
+            PlayerSkeleton p = new PlayerSkeleton();
 
             while(!s.hasLost()) {
                 s.makeMove(p.pickMove(s, s.legalMoves()));
