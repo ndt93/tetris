@@ -5,7 +5,7 @@ import subprocess
 
 import numpy as np
 
-from agent import Agent
+from agent3 import Agent
 
 #CONSTANTS
 
