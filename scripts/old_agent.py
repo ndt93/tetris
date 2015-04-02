@@ -1,57 +1,8 @@
 import random
 from datetime import datetime
-from multiprocessing import Pool
 
 import numpy as np
 from scipy.optimize import minimize
-
-
-def worker_func(args):
-    self = args[0]
-    m = args[1]
-    k = args[2]
-    r = args[3]
-
-    return (self.eval_func(m, k, r) -
-            self.eval_func(m, k, self.rt) -
-            self.temporal_diff_sum(m, k)) ** 2
-
-
-def optimized_func_i_der(args):
-    """
-    The derivative of the optimized function with respect to the
-    ith component of the vector r
-    """
-    self = args[0]
-    r = args[1]
-    i = args[2]
-
-    result = 0
-    M = len(self.data)
-
-    for m in xrange(M):
-        Nm = self.data[m].shape[0] - 1
-
-        for k in xrange(Nm + 1):
-            result += ((self.eval_func(m, k, r) -
-                        self.eval_func(m, k, self.rt) -
-                        self.temporal_diff_sum(m, k)) * 2 *
-                       self.eval_func_der(m, k, r, i))
-
-    return result
-
-
-def worker_func_der(args):
-    self = args[0]
-    m = args[1]
-    k = args[2]
-    r = args[3]
-    i = args[4]
-
-    return ((self.eval_func(m, k, r) -
-             self.eval_func(m, k, self.rt) -
-             self.temporal_diff_sum(m, k)) * 2 *
-            self.eval_func_der(m, k, r, i))
 
 
 class Agent:
@@ -87,7 +38,8 @@ class Agent:
     def eval_func(self, m, k, r):
         """
         The evaluation function value for the set of weights (vector) r
-        at the mth game and kth board state """
+        at the mth game and kth board state
+        """
         return np.dot(r, self.data[m][k])
 
     def eval_func_der(self, m, k, r, i):
@@ -122,18 +74,14 @@ class Agent:
     def optimized_func(self, r):
         result = 0
         M = len(self.data)
-        pool = Pool(processes=4)
 
-        for m in xrange(M):
+        for m in range(M):
             Nm = self.data[m].shape[0] - 1
 
-            k_args = range(Nm + 1)
-            self_args = [self] * len(k_args)
-            m_args = [m] * len(k_args)
-            r_args = [r] * len(k_args)
-
-            result += sum(pool.map(worker_func,
-                                   zip(self_args, m_args, k_args, r_args)))
+            for k in range(Nm + 1):
+                result += (self.eval_func(m, k, r) -
+                           self.eval_func(m, k, self.rt) -
+                           self.temporal_diff_sum(m, k)) ** 2
 
         return result
 
@@ -153,17 +101,12 @@ class Agent:
                             self.eval_func(m, k, self.rt) -
                             self.temporal_diff_sum(m, k)) * 2 *
                            self.eval_func_der(m, k, r, i))
+
         return result
 
     def optimized_func_der(self, r):
-        p = Pool(processes=4)
-
-        self_args = [self] * len(r)
-        i_args = range(len(r))
-        r_args = [r] * len(r)
-
-        return np.array(p.map(optimized_func_i_der,
-                              zip(self_args, r_args, i_args)))
+        return np.array([self.optimized_func_i_der(r, i)
+                         for i in range(len(r))])
 
     def callback(self, r):
         print("Iteration %d completed at %s" %
@@ -171,9 +114,6 @@ class Agent:
         self.cur_iter += 1
 
     def compute_next_rt(self):
-        print("Start computing at %s" %
-              (datetime.now().strftime("%d/%m/%Y %H:%M:%S")))
-
         self.cur_iter = 1
 
         r0 = np.array([random.randint(-10, 10)
