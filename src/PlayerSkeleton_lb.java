@@ -337,12 +337,14 @@ public class PlayerSkeleton {
         State s;
         TFrame t;
         int gameCount = 0;
+        boolean gameComplete = false;
         while (gameCount < NO_OF_GAMES) {
 
             s = new State();
             t = new TFrame(s);
 
             PlayerSkeleton p = new PlayerSkeleton();
+            gameComplete = false;
 
             while(!s.hasLost()) {
                 s.makeMove(p.pickMove(s, s.legalMoves()));
@@ -361,22 +363,24 @@ public class PlayerSkeleton {
 
             if (number_of_board_states > MAX_BOARD_STATE) {
                 states.clear();
+
             } else {
                 for (int j = 0; j < states.size(); j++) {
                     System.out.println(states.get(j));
                 }
                 gameCount++;
+                gameComplete = true;
             }
 
             // Remove the windows as we finish the game
             t.dispose();
 
             // Print signal for next game
-            if (PRINT_HASH_AFTER_EACH_GAME && gameCount != NO_OF_GAMES - 1) {
+            if (PRINT_HASH_AFTER_EACH_GAME && gameCount != NO_OF_GAMES - 1 && gameComplete) {
                 System.out.println("#");
             }
 
-            if (PRINT_LINES_CLEARED) {
+            if (PRINT_LINES_CLEARED && gameComplete) {
                 System.out.println("You have completed " + s.getRowsCleared()
                         + " rows.");
             }
