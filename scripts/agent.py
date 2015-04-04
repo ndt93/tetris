@@ -122,7 +122,7 @@ class Agent:
     def optimized_func(self, r):
         result = 0
         M = len(self.data)
-        pool = Pool(processes=4, maxtasksperchild=20)
+        pool = Pool(processes=4)
 
         for m in xrange(M):
             Nm = self.data[m].shape[0] - 1
@@ -134,6 +134,9 @@ class Agent:
 
             result += sum(pool.map(worker_func,
                                    zip(self_args, m_args, k_args, r_args)))
+
+        pool.close()
+        pool.join()
 
         return result
 
@@ -156,14 +159,19 @@ class Agent:
         return result
 
     def optimized_func_der(self, r):
-        p = Pool(processes=4, maxtasksperchild=10)
+        p = Pool(processes=4)
 
         self_args = [self] * len(r)
         i_args = range(len(r))
         r_args = [r] * len(r)
 
-        return np.array(p.map(optimized_func_i_der,
-                              zip(self_args, r_args, i_args)))
+        result = np.array(p.map(optimized_func_i_der,
+                                zip(self_args, r_args, i_args)))
+
+        p.close()
+        p.join()
+
+        return result
 
     def callback(self, r):
         print("Iteration %d completed at %s" %
