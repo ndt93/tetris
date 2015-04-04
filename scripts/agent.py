@@ -122,7 +122,7 @@ class Agent:
     def optimized_func(self, r):
         result = 0
         M = len(self.data)
-        pool = Pool(processes=4)
+        pool = Pool(processes=4, maxtasksperchild=20)
 
         for m in xrange(M):
             Nm = self.data[m].shape[0] - 1
@@ -156,7 +156,7 @@ class Agent:
         return result
 
     def optimized_func_der(self, r):
-        p = Pool(processes=4)
+        p = Pool(processes=4, maxtasksperchild=10)
 
         self_args = [self] * len(r)
         i_args = range(len(r))
