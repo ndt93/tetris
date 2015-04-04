@@ -2,6 +2,7 @@ import sys
 import os
 import random
 import subprocess
+from multiprocessing import freeze_support
 
 import numpy as np
 
@@ -58,6 +59,7 @@ arg3: initial weight_file
 '''
 
 if __name__ == "__main__":
+    freeze_support()
     agent = Agent()
     agent.set_learning_factor(0.02)
 
